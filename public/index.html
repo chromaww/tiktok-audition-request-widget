@@ -4,46 +4,101 @@
   <meta charset="UTF-8">
   <title>TikTok Live Connector</title>
   <style>
+    :root {
+      --pink: #ffe5f0;
+      --pink-hover: #ffd6ea;
+      --accent: #e460a3;
+      --grey-pink: #f2c4da;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
+      padding: 0;
+      background: #fef6f9;
+      font-family: 'Nunito', sans-serif;
       display: flex;
-      flex-direction: column;
-      height: 100vh;
       justify-content: center;
       align-items: center;
-      background: #111;
-      color: white;
-      font-family: Arial, sans-serif;
+      height: 100vh;
+      color: #444;
     }
-    input, button {
-      margin: 10px;
-      padding: 15px;
+
+    .container {
+      background: #fff;
+      padding: 32px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+      width: 90%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
       font-size: 18px;
-      border: none;
-      border-radius: 8px;
+      border-radius: 10px;
+      border: 2px solid #ddd;
+      margin-bottom: 20px;
+      outline: none;
+      transition: border 0.3s;
     }
-    input {
-      width: 300px;
+
+    input[type="text"]:focus {
+      border-color: var(--accent);
     }
+
     button {
-      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      background: var(--accent);
       color: white;
+      font-size: 18px;
+      font-weight: bold;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 10px;
       cursor: pointer;
-      transition: 0.3s ease-in-out;
+      width: 100%;
+      transition: background 0.3s ease;
     }
-    button:hover {
-      transform: scale(1.05);
-      box-shadow: 0 0 10px #ff4b2b;
+
+    button.active {
+      background: var(--grey-pink);
+      color: #555;
     }
-    button:disabled {
-      background: #444;
-      cursor: not-allowed;
+
+    .footer {
+      margin-top: 20px;
+      font-size: 13px;
+      color: #aaa;
+    }
+
+    #message {
+      font-size: 20px;
+      color: #666;
+      margin-top: 10px;
+      display: none;
     }
   </style>
+  
 </head>
 <body>
-  <h2>Sudah Siappeu Traktaktakdess?!?!</h2>
-  <input type="text" id="username" placeholder="Masukkan TikTok username km 🤍..." />
-  <button id="toggleBtn">Connect</button>
+  <div class="container">
+    <h1>🎀 Semangat!! 🤍✨</h1>
+    <input id="usernameInput" type="text" placeholder="Masukkan TikTok username km 🤍..." />
+    <div id="message" style="margin: 20px;">Cudah ciapp! Selamat bermain!! 🤍</div>
+    <button id="connectBtn">Mulai!!</button>
+    <div class="footer">🐈 🐈‍⬛ 🐼 🦦 ✨ <br/> Made with 🤍 by Maw!</div>
+  </div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -59,48 +114,63 @@
 
     socket.emit('join', CLIENT_ID);
 
-    const toggleBtn = document.getElementById('toggleBtn');
-    const usernameInput = document.getElementById('username');
+    const connectBtn = document.getElementById('connectBtn');
+    const usernameInput = document.getElementById('usernameInput');
+    const message = document.getElementById('message');
 
     let isConnected = false;
 
-    toggleBtn.addEventListener('click', () => {
+    connectBtn.addEventListener('click', () => {
       const username = usernameInput.value.trim();
       
       if (!isConnected) {
         if (!username) {
-          alert("Please enter a TikTok username.");
+          alert("TikTok usernamenya kosong sayang 🤍");
           return;
         }
 
-        toggleBtn.innerText = "Sedang Terhubung...";
-        toggleBtn.disabled = true;
+        sessionStorage.setItem('tiktokUsername', username);
+        isConnected = true;
+
+        connectBtn.classList.add('active');
+        connectBtn.innerText = "Sedang Terhubung...";
+        connectBtn.disabled = true;
         socket.emit('start-live', username);
       } else {
-        toggleBtn.innerText = "Disconnecting...";
-        toggleBtn.disabled = true;
+        connectBtn.classList.add('active');
+        connectBtn.innerText = "Disconnecting...";
+        connectBtn.disabled = true;
         socket.emit('disconnect-live');
       }
     });
 
     socket.on('connected', () => {
       isConnected = true;
-      toggleBtn.innerText = "Disconnect";
-      toggleBtn.disabled = false;
+      connectBtn.classList.remove('active');
+      usernameInput.style.display = 'none';
+      message.style.display = 'block';
+      connectBtn.innerText = "Disconnect";
+      connectBtn.disabled = false;
       usernameInput.disabled = true;
     });
 
     socket.on('disconnected', () => {
       isConnected = false;
-      toggleBtn.innerText = "Connect";
-      toggleBtn.disabled = false;
+      connectBtn.classList.remove('active');
+      usernameInput.style.display = 'block';
+      message.style.display = 'none';
+      connectBtn.innerText = "Mulai!!";
+      connectBtn.disabled = false;
       usernameInput.disabled = false;
     });
 
     socket.on('connect-error', (err) => {
       isConnected = false;
-      toggleBtn.innerText = "Connect";
-      toggleBtn.disabled = false;
+      connectBtn.classList.remove('active');
+      usernameInput.style.display = 'block';
+      message.style.display = 'none';
+      connectBtn.innerText = "Mulai!!";
+      connectBtn.disabled = false;
       usernameInput.disabled = false;
       console.error(err);
     });

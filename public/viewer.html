@@ -1,68 +1,113 @@
-<!-- public/viewer.html -->
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <title>Viewer</title>
-    <style>
-        body {
-            background: #000;
-            color: #fff;
-            font-family: monospace;
-            padding: 20px;
-            margin: 0;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Viewer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink: #ffe5f0;
+      --pink-hover: #ffd6ea;
+      --accent: #e460a3;
+    }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fef6f9;
+      font-family: 'Nunito', sans-serif;
+      color: #444;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
 
-        li {
-            margin: 8px 0;
-            padding: 10px;
-            background: #222;
-            border-radius: 4px;
-        }
-    </style>
+    .container {
+      margin: 30px auto;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      padding: 24px;
+      width: 95%;
+      max-width: 500px;
+      box-sizing: border-box;
+    }
+
+    h1 {
+      font-size: clamp(26px, 5vw, 32px);
+      margin-bottom: 20px;
+      color: var(--accent);
+      text-align: center;
+    }
+
+    ul#log {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    ul#log li {
+      background: var(--pink);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      font-size: clamp(16px, 4vw, 20px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      word-wrap: break-word;
+      transition: background 0.3s ease;
+    }
+
+    ul#log li:hover {
+      background: var(--pink-hover);
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 25px;
+      color: #aaa;
+    }
+  </style>
 </head>
-
 <body>
+  <div class="container">
+    <h1>🐈 Request Lagu Kalian</h1>
     <ul id="log"></ul>
+    <div class="footer">Nyaa Nyaaa Nyaaa!! ✨✨✨</div>
+  </div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const CLIENT_ID = "CURRENT_SESSION";
-        const socket = io({
-            auth: {
-                clientId: CLIENT_ID
-            },
-            path: '/socket.io',
-            transports: ['websocket'],
-            secure: true
-        });
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const CLIENT_ID = "CURRENT_SESSION";
+    const socket = io({
+        auth: {
+            clientId: CLIENT_ID
+        },
+        path: '/socket.io',
+        transports: ['websocket'],
+        secure: true
+    });
 
-        socket.emit('join', CLIENT_ID);
+    socket.emit('join', CLIENT_ID);
 
-        const logList = document.getElementById('log');
+    const logList = document.getElementById('log');
 
-        socket.on('event-log', (message) => {
-            const li = document.createElement('li');
-            li.textContent = message;
-            if (logList.children.length < 5) {
-                logList.appendChild(li);
-            }
-        });
+    socket.on('event-log', (message) => {
+        const li = document.createElement('li');
+        li.innerHTML = message;
+        if (logList.children.length < 5) {
+            logList.appendChild(li);
+        }
+    });
 
-        // ✅ New logic: Clear log on 'next-request'
-        socket.on('next-request', () => {
-            if (logList.firstChild) {
-                logList.removeChild(logList.firstChild);
-            }
-        });
-    </script>
+    // ✅ New logic: Clear log on 'next-request'
+    socket.on('next-request', () => {
+        if (logList.firstChild) {
+            logList.removeChild(logList.firstChild);
+        }
+    });
+</script>
 </body>
-
 </html>

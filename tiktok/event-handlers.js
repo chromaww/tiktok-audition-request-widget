@@ -19,7 +19,7 @@ function registerEventHandlers(client, socket) {
                 } else if (command === Constants.COMMAND_REQUEST) {
                     let songRequest = data.comment.split(`${command} `)[1];
                     Logger.logRequest(data.user.uniqueId, songRequest);
-                    socket.to("CURRENT_SESSION").emit('event-log', `Request dari ${data.user.uniqueId}: ${songRequest}`);
+                    socket.to("CURRENT_SESSION").emit('event-log', `🤍 Request dari <b>${data.user.uniqueId}</b>: <b>${songRequest}</b>`);
                 }
             } else {
                 // For viewers side
