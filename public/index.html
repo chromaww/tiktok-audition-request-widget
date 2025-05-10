@@ -51,7 +51,10 @@
     const socket = io({
         auth: { 
             clientId: CLIENT_ID
-        }
+        },
+        path: '/socket.io',
+        transports: ['websocket'],
+        secure: true
     });
 
     socket.emit('join', CLIENT_ID);

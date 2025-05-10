@@ -36,9 +36,12 @@
     <script>
         const CLIENT_ID = "CURRENT_SESSION";
         const socket = io({
-            auth: { 
+            auth: {
                 clientId: CLIENT_ID
-            }
+            },
+            path: '/socket.io',
+            transports: ['websocket'],
+            secure: true
         });
 
         socket.emit('join', CLIENT_ID);
