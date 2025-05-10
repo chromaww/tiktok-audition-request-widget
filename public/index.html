@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TikTok Live Connector</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      justify-content: center;
+      align-items: center;
+      background: #111;
+      color: white;
+      font-family: Arial, sans-serif;
+    }
+    input, button {
+      margin: 10px;
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+    }
+    input {
+      width: 300px;
+    }
+    button {
+      background: linear-gradient(to right, #ff416c, #ff4b2b);
+      color: white;
+      cursor: pointer;
+      transition: 0.3s ease-in-out;
+    }
+    button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 10px #ff4b2b;
+    }
+    button:disabled {
+      background: #444;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h2>Sudah Siappeu Traktaktakdess?!?!</h2>
+  <input type="text" id="username" placeholder="Masukkan TikTok username km 🤍..." />
+  <button id="toggleBtn">Connect</button>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const CLIENT_ID = "CURRENT_SESSION";
+    const socket = io({
+        auth: { 
+            clientId: CLIENT_ID
+        }
+    });
+
+    socket.emit('join', CLIENT_ID);
+
+    const toggleBtn = document.getElementById('toggleBtn');
+    const usernameInput = document.getElementById('username');
+
+    let isConnected = false;
+
+    toggleBtn.addEventListener('click', () => {
+      const username = usernameInput.value.trim();
+      
+      if (!isConnected) {
+        if (!username) {
+          alert("Please enter a TikTok username.");
+          return;
+        }
+
+        toggleBtn.innerText = "Sedang Terhubung...";
+        toggleBtn.disabled = true;
+        socket.emit('start-live', username);
+      } else {
+        toggleBtn.innerText = "Disconnecting...";
+        toggleBtn.disabled = true;
+        socket.emit('disconnect-live');
+      }
+    });
+
+    socket.on('connected', () => {
+      isConnected = true;
+      toggleBtn.innerText = "Disconnect";
+      toggleBtn.disabled = false;
+      usernameInput.disabled = true;
+    });
+
+    socket.on('disconnected', () => {
+      isConnected = false;
+      toggleBtn.innerText = "Connect";
+      toggleBtn.disabled = false;
+      usernameInput.disabled = false;
+    });
+
+    socket.on('connect-error', (err) => {
+      isConnected = false;
+      toggleBtn.innerText = "Connect";
+      toggleBtn.disabled = false;
+      usernameInput.disabled = false;
+      console.error(err);
+    });
+  </script>
+</body>
+</html>

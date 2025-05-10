@@ -1,0 +1,65 @@
+<!-- public/viewer.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Viewer</title>
+    <style>
+        body {
+            background: #000;
+            color: #fff;
+            font-family: monospace;
+            padding: 20px;
+            margin: 0;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin: 8px 0;
+            padding: 10px;
+            background: #222;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <ul id="log"></ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const CLIENT_ID = "CURRENT_SESSION";
+        const socket = io({
+            auth: { 
+                clientId: CLIENT_ID
+            }
+        });
+
+        socket.emit('join', CLIENT_ID);
+
+        const logList = document.getElementById('log');
+
+        socket.on('event-log', (message) => {
+            const li = document.createElement('li');
+            li.textContent = message;
+            if (logList.children.length < 5) {
+                logList.appendChild(li);
+            }
+        });
+
+        // ✅ New logic: Clear log on 'next-request'
+        socket.on('next-request', () => {
+            if (logList.firstChild) {
+                logList.removeChild(logList.firstChild);
+            }
+        });
+    </script>
+</body>
+
+</html>

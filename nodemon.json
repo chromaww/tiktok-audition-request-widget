@@ -1,0 +1,11 @@
+{
+    "watch": [
+        "."
+    ],
+    "ignore": [
+        "public/*",
+        "node_modules"
+    ],
+    "ext": "js,json,html",
+    "exec": "node index.js"
+}
