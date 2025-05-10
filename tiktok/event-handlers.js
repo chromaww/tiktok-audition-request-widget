@@ -14,7 +14,7 @@ function registerEventHandlers(client, socket) {
                     socket.to("CURRENT_SESSION").emit('next-request');
                     Logger.logCommand(data.user.uniqueId, data.comment);
                 } else if (command === Constants.COMMAND_CLEAR) {
-                    socket.to("CURRENT_SESSION").emit('next-request');
+                    socket.to("CURRENT_SESSION").emit('clear-request');
                     Logger.logCommand(data.user.uniqueId, data.comment);
                 } else if (command === Constants.COMMAND_REQUEST) {
                     let songRequest = data.comment.split(`${command} `)[1];

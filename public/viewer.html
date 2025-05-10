@@ -102,10 +102,17 @@
         }
     });
 
-    // ✅ New logic: Clear log on 'next-request'
+    // Skip song to next request
     socket.on('next-request', () => {
         if (logList.firstChild) {
             logList.removeChild(logList.firstChild);
+        }
+    });
+
+    // Clear all song requests on 'next-request'
+    socket.on('clear-request', () => {
+        if (logList.firstChild) {
+            logList.innerHTML = "";
         }
     });
 </script>
